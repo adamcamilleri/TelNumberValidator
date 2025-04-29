@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>US Telephone Number Validator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
+      width: 100%;
+      padding: 30px;
+    }
+    
+    h1 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 24px;
+    }
+    
+    .input-group {
+      margin-bottom: 20px;
+    }
+    
+    input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    
+    input:focus {
+      border-color: #4a90e2;
+    }
+    
+    .buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    button {
+      flex: 1;
+      padding: 12px;
+      background-color: #4a90e2;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      transition: background-color 0.3s;
+    }
+    
+    button:hover {
+      background-color: #357abf;
+    }
+    
+    #clear-btn {
+      background-color: #e74c3c;
+    }
+    
+    #clear-btn:hover {
+      background-color: #c0392b;
+    }
+    
+    .results {
+      padding: 15px;
+      border-radius: 5px;
+      font-size: 16px;
+      line-height: 1.5;
+      min-height: 50px;
+      border: 1px solid #ddd;
+      background-color: #f9f9f9;
+    }
+    
+    .valid {
+      color: #27ae60;
+      font-weight: 500;
+    }
+    
+    .invalid {
+      color: #e74c3c;
+      font-weight: 500;
+    }
+    
+    .examples {
+      margin-top: 25px;
+      border-top: 1px solid #eee;
+      padding-top: 20px;
+    }
+    
+    .examples h2 {
+      font-size: 18px;
+      margin-bottom: 10px;
+      color: #555;
+    }
+    
+    .examples ul {
+      list-style-position: inside;
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .examples li {
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>US Telephone Number Validator</h1>
+    
+    <div class="input-group">
+      <input type="text" id="user-input" placeholder="Enter a US phone number (e.g. 555-555-5555)">
+    </div>
+    
+    <div class="buttons">
+      <button id="check-btn">Check Number</button>
+      <button id="clear-btn">Clear</button>
+    </div>
+    
+    <div class="results" id="results-div"></div>
+    
+    <div class="examples">
+      <h2>Valid Format Examples:</h2>
+      <ul>
+        <li>1 555-555-5555</li>
+        <li>1 (555) 555-5555</li>
+        <li>1(555)555-5555</li>
+        <li>1 555 555 5555</li>
+        <li>5555555555</li>
+        <li>555-555-5555</li>
+        <li>(555)555-5555</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const userInput = document.getElementById('user-input');
+      const checkBtn = document.getElementById('check-btn');
+      const clearBtn = document.getElementById('clear-btn');
+      const resultsDiv = document.getElementById('results-div');
+      
+      // Validate a US phone number
+      function validatePhoneNumber(str) {
+        // Use a specific regex pattern that matches all the test cases
+        const regex = /^1?\s?(\d{3}|\(\d{3}\))[-\s]?\d{3}[-\s]?\d{4}$|^1?\s?\(\d{3}\)\d{3}-\d{4}$|^1?\s?\d{10}$/;
+        
+        // First check the basic pattern
+        if (!regex.test(str)) {
+          return false;
+        }
+        
+        // Get all digits
+        const digits = str.replace(/\D/g, '');
+        
+        // If there are 11 digits, the first must be 1
+        if (digits.length === 11 && digits[0] !== '1') {
+          return false;
+        }
+        
+        // The length must be 10 or 11
+        if (digits.length !== 10 && digits.length !== 11) {
+          return false;
+        }
+        
+        // Check for balanced parentheses
+        const openParens = (str.match(/\(/g) || []).length;
+        const closeParens = (str.match(/\)/g) || []).length;
+        if (openParens !== closeParens) {
+          return false;
+        }
+        
+        return true;
+      }
+      
+      // Event listener for check button
+      checkBtn.addEventListener('click', function() {
+        const phoneNumber = userInput.value;
+        
+        // Check if input is empty
+        if (!phoneNumber) {
+          alert('Please provide a phone number');
+          return;
+        }
+        
+        // Validate phone number
+        const isValid = validatePhoneNumber(phoneNumber);
+        
+        // Display result
+        if (isValid) {
+          resultsDiv.innerHTML = `Valid US number: ${phoneNumber}`;
+        } else {
+          resultsDiv.innerHTML = `Invalid US number: ${phoneNumber}`;
+        }
+      });
+      
+      // Event listener for clear button
+      clearBtn.addEventListener('click', function() {
+        resultsDiv.innerHTML = '';
+        userInput.value = '';
+      });
+      
+      // Allow Enter key to trigger check
+      userInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          checkBtn.click();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
